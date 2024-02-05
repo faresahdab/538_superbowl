@@ -1,0 +1,66 @@
+---
+title: "607_week1"
+author: "Fares A"
+date: "2024-02-05"
+output: html_document
+---
+
+## Data 607 Week 1 assignment
+
+I chose the article titled "According To Super Bowl Ads, Americans Love America, Animals And Sex" which can be found at the URL
+https://projects.fivethirtyeight.com/super-bowl-ads/.
+
+
+### Introduction 
+
+The FiveThirtyEight analysis of Super Bowl ads reveals Americans' affinity for themes of humor, patriotism, celebrities, danger, animals, and sex appeal in their commercials, sometimes combining these elements in unexpected ways. The evaluation, which examined 233 ads from the most frequent advertisers across 21 Super Bowls, categorized ads based on seven specific criteria to uncover trends and odd combinations. Their findings highlight the diverse strategies used to capture viewer attention, from humorous takes on danger to the merging of patriotism with celebrity endorsements, and even the bizarre mix of sexuality with animal imagery in advertising.
+
+I will load the data from FiveThirtyEight's GitHub page (https://github.com/fivethirtyeight/superbowl-ads) to ensure this R code yields reproducible results.
+
+```{r}
+library(readxl)
+csv_url <- "https://raw.githubusercontent.com/fivethirtyeight/superbowl-ads/main/superbowl-ads.csv"
+df <- read.csv(csv_url)
+head(df)
+```
+
+
+Starting by re-coding some of the categorical variables from the True/False coding to the 1/0 one.
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+df_recoded <- df %>%
+  mutate(across(c(funny, show_product_quickly, patriotic, celebrity, danger, animals, use_sex),
+                ~ as.integer(. == "True")))
+df_recoded <- df_recoded %>%
+  mutate(across(c(funny, show_product_quickly, patriotic, celebrity, danger, animals, use_sex),
+                ~ factor(., levels = c(0, 1), labels = c("False", "True"))))
+```
+
+
+Starting with some exploratory analyses and visualizations.
+
+```{r}
+# summary of each variable
+summary(df_recoded)
+library(ggplot2)
+# a bar plot of the number of funny
+ggplot(df_recoded, aes(x = as.factor(funny))) +
+  geom_bar() +
+  labs(x = "Is Funny", y = "Count") +
+  scale_x_discrete(labels = c("0" = "Not Funny", "1" = "Funny"))
+```
+```{r}
+# a bar plot of the number of ads showing danger
+ggplot(df_recoded, aes(x = as.factor(danger))) +
+  geom_bar() +
+  labs(x = "Is showing danger", y = "Count") +
+  scale_x_discrete(labels = c("0" = "Not showing danger", "1" = "Showing danger"))
+```
+
+
+
+
+### Conclusions
+
+I am going to explore this interesting data set and verify if the claims in this article are indeed true. I would also like to evaluate the trends over the years of proportions of ads for each of the categories they listed, including those that were funny, patriotic, relied on using sexuality, showed animals, or included a celebrity.It would be even more interesting to see what change, if any, took place over the years.What might also be interesting is if I could find any publicly available data for at least a few of the commercial products these ads were for, and evaluate any change in buying habits around the time of airing of these Superbowl ads (though there are definitely many confounders at play, but it would be a good exercise and a fun one).
